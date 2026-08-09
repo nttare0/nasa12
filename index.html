@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NASA Explorer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <header class="header">
+        <div class="header-inner">
+            <a href="#" class="logo" aria-label="NASA Explorer home">
+                <span class="logo-mark" aria-hidden="true">
+                    <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="16" cy="16" r="14" stroke="currentColor" stroke-width="1.5"/>
+                        <circle cx="16" cy="16" r="8" stroke="currentColor" stroke-width="1" opacity="0.5"/>
+                        <circle cx="16" cy="16" r="3" fill="currentColor"/>
+                    </svg>
+                </span>
+                <span class="logo-text">NASA Explorer</span>
+            </a>
+            <nav class="nav" role="navigation" aria-label="Main sections">
+                <button class="nav-btn active" data-section="apod" aria-current="page">Today's Image</button>
+                <button class="nav-btn" data-section="gallery">Gallery</button>
+                <button class="nav-btn" data-section="mars">Mars Rover</button>
+                <button class="nav-btn" data-section="neo">Asteroids</button>
+            </nav>
+        </div>
+    </header>
+
+    <div class="settings-bar">
+        <div class="settings-inner">
+            <label for="apiKey" class="api-key-label">NASA API Key</label>
+            <input 
+                type="text" 
+                id="apiKey" 
+                class="api-key-input"
+                placeholder="Enter your API key" 
+                value="eOqmT3gdxfOxj7SFgZZJTn83ALWzSpfWnVp2WXD2"
+                aria-describedby="apiKeyHelp"
+            >
+            <button id="saveKey" class="save-btn" type="button" aria-label="Save API key">Save</button>
+            <span id="apiKeyHelp" class="api-key-help">Keys are stored locally in your browser</span>
+        </div>
+    </div>
+
+    <main id="main-content" class="main-content">
+        <!-- APOD Section -->
+        <section id="apod-section" class="section active" aria-labelledby="apod-heading">
+            <header class="section-header">
+                <h1 id="apod-heading" class="section-title">Astronomy Picture of the Day</h1>
+                <p class="section-description">A different image or photograph of our fascinating universe is featured each day, along with a brief explanation written by a professional astronomer.</p>
+            </header>
+            
+            <div class="apod-layout">
+                <div class="apod-media">
+                    <div class="apod-loader" id="apodLoader" role="status" aria-live="polite">
+                        <span class="sr-only">Loading image...</span>
+                        <div class="loader-spinner" aria-hidden="true"></div>
+                    </div>
+                    <div class="apod-image-container" id="apodContent" style="display: none;">
+                        <img 
+                            id="apodImage" 
+                            src="" 
+                            alt="" 
+                            class="apod-image"
+                            loading="lazy"
+                        >
+                        <div class="apod-caption">
+                            <time id="apodDate" class="apod-date" datetime=""></time>
+                            <span id="apodCopyright" class="apod-copyright"></span>
+                        </div>
+                    </div>
+                    <div class="apod-error" id="apodError" style="display: none;" role="alert">
+                        <p class="error-message" id="apodErrorMsg"></p>
+                        <button class="btn btn-secondary" onclick="fetchAPOD()" type="button">Try Again</button>
+                    </div>
+                </div>
+                
+                <div class="apod-details">
+                    <h2 id="apodTitle" class="apod-title"></h2>
+                    <div class="apod-description" id="apodExplanation"></div>
+                    <div class="apod-actions">
+                        <a id="apodHoverLink" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+                            View Full Size
+                            <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                                <polyline points="15 3 21 3 21 9"/>
+                                <line x1="10" y1="14" x2="21" y2="3"/>
+                            </svg>
+                        </a>
+                        <a id="apodInfoLink" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
+                            Visit NASA
+                            <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                                <polyline points="15 3 21 3 21 9"/>
+                                <line x1="10" y1="14" x2="21" y2="3"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <nav class="apod-nav" aria-label="Browse previous and next images">
+                <button class="nav-arrow" onclick="fetchPreviousAPOD()" type="button" aria-label="View previous day's image">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <polyline points="15 18 9 12 15 6"/>
+                    </svg>
+                    <span>Previous</span>
+                </button>
+                <div class="apod-date-nav">
+                    <span class="date-label">Showing</span>
+                    <time id="apodDateDisplay" class="date-value" datetime=""></time>
+                </div>
+                <button class="nav-arrow" onclick="fetchNextAPOD()" type="button" aria-label="View next day's image">
+                    <span>Next</span>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <polyline points="9 18 15 12 9 6"/>
+                    </svg>
+                </button>
+            </nav>
+        </section>
+
+        <!-- Gallery Section -->
+        <section id="gallery-section" class="section" aria-labelledby="gallery-heading">
+            <header class="section-header">
+                <h1 id="gallery-heading" class="section-title">Past Images Gallery</h1>
+                <p class="section-description">Browse through previous Astronomy Pictures of the Day from NASA's archive.</p>
+            </header>
+            
+            <form class="gallery-filters" onsubmit="fetchGallery(event)">
+                <div class="form-group">
+                    <label for="galleryStartDate">Start Date</label>
+                    <input 
+                        type="date" 
+                        id="galleryStartDate" 
+                        name="startDate"
+                        min="1995-06-16"
+                        max=""
+                    >
+                </div>
+                <div class="form-group">
+                    <label for="galleryEndDate">End Date</label>
+                    <input 
+                        type="date" 
+                        id="galleryEndDate" 
+                        name="endDate"
+                        min=""
+                        max=""
+                    >
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <span class="btn-text">Load Gallery</span>
+                    <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <line x1="12" y1="5" x2="12" y2="19"/>
+                        <polyline points="19 12 12 19 5 12"/>
+                    </svg>
+                </button>
+            </form>
+            
+            <div class="gallery-loader" id="galleryLoader" style="display: none;" role="status" aria-live="polite">
+                <span class="sr-only">Loading gallery...</span>
+                <div class="loader-spinner" aria-hidden="true"></div>
+                <p class="loader-text">Fetching images from NASA...</p>
+            </div>
+            
+            <div class="gallery-grid" id="galleryGrid" aria-live="polite"></div>
+            
+            <div class="gallery-empty" id="galleryEmpty" style="display: none;" role="status">
+                <svg class="empty-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                    <circle cx="11" cy="11" r="8"/>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+                <p class="empty-text">No images found for this date range.</p>
+                <p class="empty-hint">Try selecting different dates. The archive starts from June 16, 1995.</p>
+            </div>
+        </section>
+
+        <!-- Mars Rover Section -->
+        <section id="mars-section" class="section" aria-labelledby="mars-heading">
+            <header class="section-header">
+                <h1 id="mars-heading" class="section-title">Mars Rover Photos</h1>
+                <p class="section-description">Explore the Red Planet through the eyes of NASA's surface rovers.</p>
+            </header>
+            
+            <form class="mars-filters" onsubmit="fetchMarsPhotos(event)">
+                <div class="form-group">
+                    <label for="roverSelect">Rover</label>
+                    <select id="roverSelect" name="rover">
+                        <option value="curiosity">Curiosity</option>
+                        <option value="opportunity">Opportunity</option>
+                        <option value="spirit">Spirit</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="cameraSelect">Camera</label>
+                    <select id="cameraSelect" name="camera">
+                        <option value="">All Cameras</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="earthDate">Date</label>
+                    <input type="date" id="earthDate" name="earthDate">
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <span class="btn-text">Fetch Photos</span>
+                    <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <circle cx="11" cy="11" r="8"/>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                    </svg>
+                </button>
+            </form>
+            
+            <div class="section-loader" id="marsLoader" style="display: none;" role="status" aria-live="polite">
+                <span class="sr-only">Loading photos...</span>
+                <div class="loader-spinner" aria-hidden="true"></div>
+                <p class="loader-text">Sending signals to Mars...</p>
+            </div>
+            
+            <div class="section-error" id="marsError" style="display: none;" role="alert">
+                <p class="error-message" id="marsErrorMsg"></p>
+                <button class="btn btn-secondary" onclick="fetchMarsPhotos()" type="button">Try Again</button>
+            </div>
+            
+            <div class="photo-grid" id="marsGrid" aria-live="polite"></div>
+            
+            <div class="section-empty" id="marsEmpty" style="display: none;" role="status">
+                <svg class="empty-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                    <polyline points="21 15 16 10 5 21"/>
+                </svg>
+                <p class="empty-text">No photos found for this date.</p>
+                <p class="empty-hint">Try selecting a different date. Rover missions have specific operational periods.</p>
+            </div>
+        </section>
+
+        <!-- NEO Section -->
+        <section id="neo-section" class="section" aria-labelledby="neo-heading">
+            <header class="section-header">
+                <h1 id="neo-heading" class="section-title">Near Earth Objects</h1>
+                <p class="section-description">Track asteroids and comets that pass close to Earth's orbit.</p>
+            </header>
+            
+            <form class="neo-filters" onsubmit="fetchNEO(event)">
+                <div class="form-group">
+                    <label for="neoStartDate">Start Date</label>
+                    <input type="date" id="neoStartDate" name="startDate">
+                </div>
+                <div class="form-group">
+                    <label for="neoEndDate">End Date</label>
+                    <input type="date" id="neoEndDate" name="endDate">
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <span class="btn-text">Track Objects</span>
+                    <svg class="btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                        <circle cx="11" cy="11" r="8"/>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                    </svg>
+                </button>
+            </form>
+            
+            <div class="section-loader" id="neoLoader" style="display: none;" role="status" aria-live="polite">
+                <span class="sr-only">Searching for near Earth objects...</span>
+                <div class="loader-spinner" aria-hidden="true"></div>
+                <p class="loader-text">Scanning the cosmos...</p>
+            </div>
+            
+            <div class="section-error" id="neoError" style="display: none;" role="alert">
+                <p class="error-message" id="neoErrorMsg"></p>
+                <button class="btn btn-secondary" onclick="fetchNEO()" type="button">Try Again</button>
+            </div>
+            
+            <div class="neo-stats" id="neoSummary" style="display: none;" role="region" aria-label="Search results summary">
+                <div class="stat-card">
+                    <span class="stat-number" id="neoCount">0</span>
+                    <span class="stat-label">Objects Found</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" id="neoPotentiallyHazardous">0</span>
+                    <span class="stat-label">Potentially Hazardous</span>
+                </div>
+            </div>
+            
+            <div class="neo-list" id="neoGrid" aria-live="polite"></div>
+            
+            <div class="section-empty" id="neoEmpty" style="display: none;" role="status">
+                <svg class="empty-icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="2" y1="12" x2="22" y2="12"/>
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                </svg>
+                <p class="empty-text">No near Earth objects found for this date range.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-inner">
+            <p class="footer-text">
+                Data provided by <a href="https://api.nasa.gov/" target="_blank" rel="noopener noreferrer">NASA Open API</a>
+            </p>
+            <p class="footer-note">Built for space exploration enthusiasts</p>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
